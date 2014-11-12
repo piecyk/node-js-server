@@ -48,7 +48,7 @@ app.get('/mock', function(request, response) {
     var fb = new Social({
         "title":"Facebook",
         "icon":"fb",
-        "url":"https://www.facebook.com/?segun.konibire"
+        "url":"https://www.facebook.com/piecu"
     });
     // Saving it to the database.  
     fb.save(function (err) {

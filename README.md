@@ -1,6 +1,10 @@
 # node-js-server
 
+running on [https://safe-lowlands-9308.herokuapp.com])(https://safe-lowlands-9308.herokuapp.com/).
+test api on [https://safe-lowlands-9308.herokuapp.com/api/v1/socials])(https://safe-lowlands-9308.herokuapp.com/api/v1/socials/).
+
 A barebones Node.js app using [Express 4](http://expressjs.com/).
+
 
 ## Running Locally
 
