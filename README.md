@@ -20,6 +20,7 @@ Your app should now be running on [localhost:5000](http://localhost:5000/).
 
 ```
 $ heroku create
+$ heroku addons:add mongolab
 $ git push heroku master
 $ heroku open
 ```
