@@ -4,11 +4,12 @@
   "description": "A sample Node.js server using Express 4",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "NODE_ENV=development node index.js",
+    "test": "NODE_ENV=test node ./node_modules/.bin/mocha"
   },
   "dependencies": {
-      "express": "~4.9.x",
-      "mongoose": "^3.8.19"
+    "express": "~4.9.x",
+    "mongoose": "^3.8.19"
   },
   "engines": {
     "node": "0.10.x"
@@ -22,5 +23,11 @@
     "heroku",
     "express"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "chai": "*",
+    "mocha": "*",
+    "supertest": "^0.15.0",
+    "winston": "^0.8.3"
+  }
 }

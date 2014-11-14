@@ -1,18 +1,18 @@
 
-var mongoose = require ("mongoose");
-var dbName = "testdb";
-var uristring =
-    process.env.MONGOLAB_URI ||
-    process.env.MONGOHQ_URL ||
-    'mongodb://localhost/' + dbName;
+var env = process.env.NODE_ENV || 'development';
+var config = require('./config');
+var envConfig = config.app[env];
+var logger = require('./logger');
+var mongoose = require("mongoose");
 
-mongoose.connect(uristring, function (err, res) {
+mongoose.connect(envConfig.db, function (err, res) {
     if (err) {
-        console.log ('ERROR connecting to: ' + uristring + '. ' + err);
+        logger.error('ERROR connecting to: ' + envConfig.db + '. ' + err);
     } else {
-        console.log ('Succeeded connected to: ' + uristring);
+        logger.info('Succeeded connected to: ' + envConfig.db);
     }
 });
+
 var Social = require('./models/social');
 
 var express = require('express');
@@ -22,22 +22,22 @@ var app = express();
 // simple logger for this router's requests
 // all requests to this router will first hit this middleware
 router.use(function(req, res, next) {
-    console.log('%s %s %s', req.method, req.url, req.path);
+    logger.info('%s %s %s', req.method, req.url, req.path);
     next();
 });
 
 router.route('/socials').get(function(req, res) {
-    Social.find(function(err, socials) {
-        console.log("found", socials);
+    Social.model.find(function(err, socials) {
         if (err) {
+            logger.error(err);
             return res.send(err);
         }
         return res.json(socials);
     });
 });
 
-app.use('/api/v1', router); //This is our route middleware
-app.set('port', (process.env.PORT || 5000));
+app.use(config.apiVersion, router); //This is our route middleware
+app.set('port', (process.env.PORT || envConfig.port || 5000));
 app.use(express.static(__dirname + '/public'));
 
 app.get('/', function(request, response) {
@@ -45,19 +45,19 @@ app.get('/', function(request, response) {
 });
 app.get('/mock', function(request, response) {
     // Creating one user.
-    var fb = new Social({
-        "title":"Facebook",
-        "icon":"fb",
-        "url":"https://www.facebook.com/piecu"
+    Social.add('Facebook', 'fb', 'http://www.facebook.com/piecu', function() {
+        response.send('yeee! you saved!');
     });
-    // Saving it to the database.  
-    fb.save(function (err) {
-        if (err) {
-            console.log ('Error on save!');
-        }
-        response.send('yeee!');
-    }); 
 });
+
+app.get('/remove', function(request, response) {
+    Social.model.remove({}, function() {
+        response.send('yeee! removed');
+    });
+});
+
 app.listen(app.get('port'), function() {
-    console.log("Node app is running at localhost:" + app.get('port'));
+    logger.info("Node app is running at localhost:" + app.get('port'));
 });
+
+exports = module.exports = app;
