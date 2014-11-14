@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "express": "~4.9.x",
-    "mongoose": "^3.8.19"
+    "mongoose": "^3.8.19",
+    "winston": "^0.8.3"
   },
   "engines": {
     "node": "0.10.x"
@@ -27,7 +28,6 @@
   "devDependencies": {
     "chai": "*",
     "mocha": "*",
-    "supertest": "^0.15.0",
-    "winston": "^0.8.3"
+    "supertest": "^0.15.0"
   }
 }
