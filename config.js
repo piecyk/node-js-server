@@ -1,5 +1,5 @@
 module.exports = {
-    "app": {
+    "env": {
         "development": {
             db: process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'mongodb://localhost/db',
             port: 5000
@@ -10,8 +10,7 @@ module.exports = {
         }
     },
     "logger": {
-	"api": "logs/api.log",
-	"exception": "logs/exceptions.log"
+	"log": "logs/app.log"
     },
     'apiVersion': '/api/v1/'
 };

@@ -1,57 +1,41 @@
 
 var env = process.env.NODE_ENV || 'development';
 var config = require('./config');
-var envConfig = config.app[env];
 var logger = require('./logger');
 var mongoose = require("mongoose");
 
-mongoose.connect(envConfig.db, function (err, res) {
+var express = require('express');
+var app = express();
+
+mongoose.connect(config.env[env].db, function (err, res) {
     if (err) {
-        logger.error('ERROR connecting to: ' + envConfig.db + '. ' + err);
+        logger.error('ERROR connecting to: ' + config.env[env].db + '. ' + err);
     } else {
-        logger.info('Succeeded connected to: ' + envConfig.db);
+        logger.info('Succeeded connected to: ' + config.env[env].db);
     }
 });
 
-var Social = require('./models/social');
-
-var express = require('express');
-var router = express.Router();
-var app = express();
-
-// simple logger for this router's requests
-// all requests to this router will first hit this middleware
-router.use(function(req, res, next) {
-    logger.info('%s %s %s', req.method, req.url, req.path);
-    next();
-});
-
-router.route('/socials').get(function(req, res) {
-    Social.model.find(function(err, socials) {
-        if (err) {
-            logger.error(err);
-            return res.send(err);
-        }
-        return res.json(socials);
-    });
-});
-
-app.use(config.apiVersion, router); //This is our route middleware
-app.set('port', (process.env.PORT || envConfig.port || 5000));
+app.use(config.apiVersion, require('./routes'));
+app.set('port', (process.env.PORT || config.env[env].port || 5000));
 app.use(express.static(__dirname + '/public'));
 
 app.get('/', function(request, response) {
     response.send('Hello World!');
 });
+
+
+// TODO: refactor this to server js
+
+var Social = require('./models/social');
+
 app.get('/mock', function(request, response) {
-    // Creating one user.
     Social.add('Facebook', 'fb', 'http://www.facebook.com/piecu', function() {
         response.send('yeee! you saved!');
     });
 });
 
 app.get('/remove', function(request, response) {
-    Social.model.remove({}, function() {
+    Social.drop(function() {
         response.send('yeee! removed');
     });
 });

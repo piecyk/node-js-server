@@ -1,15 +1,16 @@
 var expect = require('chai').expect;
-var config = require('./../config');
-var mongoose = require('mongoose');
+//var mongoose = require('mongoose');
 var request = require('supertest');
-var Social = require('./../models/social');
-
-var app = require('./../index');
-var agent = request.agent(app);
 
 describe('Dumy', function() {
+    
+    var config = require('./../config');
+    var app = require('./../index');
+    var agent = request.agent(app);
 
-    var url = 'http://localhost:8888' + config.apiVersion;
+    var Social = require('./../models/social');
+    var Flight = require('./../flight/flight');
+
 
     it('should check string', function(){
         expect('dumy').to.be.a('string');
@@ -24,6 +25,7 @@ describe('Dumy', function() {
         var onetSocial = null;
         beforeEach(function(done){
             //add some test data
+            
             Social.add("Onet.pl", "o", "http://onet.pl", function(doc){
                 onetSocial = doc;
                 Social.add("Wp.pl", "w", "http://wp.pl", function(doc){
@@ -40,24 +42,37 @@ describe('Dumy', function() {
         });
 
         afterEach(function(done){
-            Social.model.remove({}, function() {
+            Social.drop(function() {
                 done();
             });
         });
 
-        it('respond with json', function(done) {
+        it('respond with json for socials', function(done) {
             agent
                 .get(config.apiVersion +'/socials')
                 .set('Accept', 'application/json')
                 .expect(200)
                 .expect('Content-Type', /json/)
                 .end(function(err, res) {
-                    if (err) {
-                        throw err;
-                    }
+                    if (err) { throw err; }
+                    
                     var social = res.body[0];
                     expect(social.title).to.be.a('string');
-                    expect(social.url).to.eql('http://onet.pl');
+                    expect(social.url).to.eql(onetSocial.url);
+                    done();
+                });
+        });
+
+        it('respond with json for flights', function(done) {
+            agent
+                .get(config.apiVersion +'/flights')
+                .set('Accept', 'application/json')
+                .expect(200)
+                .expect('Content-Type', /json/)
+                .end(function(err, res) {
+                    if (err) { throw err; }
+                    
+                    expect(res.body).to.eql([]);
                     done();
                 });
         });
