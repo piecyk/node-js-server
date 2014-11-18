@@ -33,35 +33,62 @@ FlightHandler.prototype.check = function(done) {
     //keys=0~K~~K6LOW~BND6~~1~X|FR~2136~%20~~STN~11/28/2014%2017:45~RZE~11/28/2014%2021:15~_0~L~~L6LOW~BND6~~1~X|FR~2137~%20~~RZE~11/30/2014%2016:55~STN~11/30/2014%2018:35~
     //keys:0~K~~K6LOW~BND6~~1~X|FR~2136~ ~~STN~11/28/2014 17:45~RZE~11/28/2014 21:15~_0~L~~L6LOW~BND6~~1~X|FR~2137~ ~~RZE~11/30/2014 16:55~STN~11/30/2014 18:35~
 
+    // request(
+    //     { method: 'POST'
+    //       , uri: 'https://www.bookryanair.com/SkySales/ItiPriceRequest-resource.aspx?keys=0~B~~B4LOW~BND4~~4~X|FR~1183~%20~~LGW~11/28/2014%2013:10~SNN~11/28/2014%2014:40~'
+    //     }
+    //     , function (error, response, body) {
+    //         // body is the decompressed response body
+    //         console.log('server encoded the data as: ' + (response.headers['content-encoding'] || 'identity'));
+    //         console.log('the decoded data is: ' + body);
+    //         // TODO: the decoded data is: {"Error": "SessionExpired", "Msg": "Your session has expired!"}
+    //         done();
+    //     }
+    // );
+
     var j = request.jar();
-    var uri = 'www.ryanair.com';
-    var url = 'http://www.ryanair.com';
+    var url = 'https://www.bookryanair.com/SkySales/Booking.aspx';
+    var uri = 'www.bookryanair.com';
     var headers = {
-        //'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:24.0) Gecko/20100101 Firefox/24.0',
-        'Content-Type' : 'application/x-www-form-urlencoded; charset=UTF-8'
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:24.0) Gecko/20100101 Firefox/24.0',
+        'Content-Type' : 'application/x-www-form-urlencoded'
+    };
+    var form = {
+        'ADULT':'1',
+        'sector1_d':'LEI',
+        'sector1_o':'aSTN',
+        'sector_1_d':'28',
+        'sector_1_m':'112014',
+        'sector_2_d':'00',
+        'sector_2_m':'--',
+        'tc':'1',
+        'travel_type':'on',
+        'acceptTerms':'yes',
+        'zoneDiscount':'',
+        'fromAirportName':'London Stansted',
+        'toAirportIATA':'Almeria',
+        'dateFlightFromInput':'11/28/2014',
+        'dateFlightToInput':'',
+        'adultQuantityInput':'More',
+        'CHILD':'0',
+        'INFANT':'0'
     };
 
-    request(
-        { method: 'POST'
-          , uri: 'https://www.bookryanair.com/SkySales/ItiPriceRequest-resource.aspx?keys=0~B~~B4LOW~BND4~~4~X|FR~1183~%20~~LGW~11/28/2014%2013:10~SNN~11/28/2014%2014:40~'
-        }
-        , function (error, response, body) {
-            // body is the decompressed response body
-            console.log('server encoded the data as: ' + (response.headers['content-encoding'] || 'identity'));
-            console.log('the decoded data is: ' + body);
-            // TODO: the decoded data is: {"Error": "SessionExpired", "Msg": "Your session has expired!"}    
-            done();
-        }
-    );
+     request({
+         method: 'GET',
+         url: url,
+         headers: headers,
+         form: form,
+         jar: j 
+     }, function (error, response, body) {
+         var cookie_string = j.getCookieString(uri); // "key1=value1; key2=value2; ..."
+         console.log("cs ", cookie_string);
+         var cookies = j.getCookies(uri);
+         console.log("Cs: ", cookies);
 
-    // request({url: url, jar: j, headers: headers}, function (error, response, body) {
-    //     var cookie_string = j.getCookieString(uri); // "key1=value1; key2=value2; ..."
-    //     console.log("cs ", cookie_string);
-    //     var cookies = j.getCookies(uri);
-    //     console.log("Cs: ", cookies);
-
-    //     done();
-    // });
+         console.log(response.headers);
+         done();
+     });
 
 };
 
